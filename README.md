@@ -324,6 +324,10 @@ Open `/game-1/display` or the display link for the game room on a projector or s
 
 Generative AI was used as an aid during the development process.
 
+## Disclaimer
+
+This project is an independent educational web application inspired by academic ChemE Jeopardy-style competitions. *Jeopardy!* is a registered trademark of Sony Pictures Television. This project is not affiliated with, sponsored by, or endorsed by Sony Pictures Television or AIChE. All game formats, branding, and competition rules referenced are the property of their respective owners.
+
 ## License
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE).

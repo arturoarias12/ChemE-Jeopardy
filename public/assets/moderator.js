@@ -46,12 +46,17 @@ function bindModeratorEvents() {
 }
 
 function bindModeratorTheme() {
-    ChemETheme.bindLocalControls({
-        colorId: 'moderator-theme-color',
-        modeId: 'moderator-theme-mode',
-        storageKey: moderatorThemeStorageKey(),
-        defaults: { color: 'blue', mode: 'dark' },
-    });
+    const defaults = { color: 'blue', mode: 'dark' };
+    ChemETheme.apply(defaults, defaults);
+    ChemETheme.setControls('moderator-theme-color', 'moderator-theme-mode', defaults);
+    const update = () => {
+        ChemETheme.apply(
+            ChemETheme.readControls('moderator-theme-color', 'moderator-theme-mode', defaults),
+            defaults,
+        );
+    };
+    document.getElementById('moderator-theme-color')?.addEventListener('change', update);
+    document.getElementById('moderator-theme-mode')?.addEventListener('change', update);
 }
 
 async function refreshModeratorAuth() {

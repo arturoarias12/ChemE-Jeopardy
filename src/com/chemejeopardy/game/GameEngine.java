@@ -603,6 +603,115 @@ public final class GameEngine {
     }
 
     /**
+     * Moderator manually locks Final Jeopardy wagers without waiting for the timer.
+     */
+    public Map<String, Object> lockFinalWagers() {
+        boolean changed = false;
+        synchronized (this) {
+            if (state.phase != Phase.FINAL_WAGER) {
+                return error("Final Jeopardy wagers are not open.");
+            }
+            clearCountdownLocked();
+            state.phase = Phase.FINAL_CLUE_READY;
+            state.statusMessage = "Final Jeopardy wagers locked by moderator. Moderator can now reveal the clue.";
+            changed = true;
+        }
+        if (changed) {
+            fireChange();
+        }
+        return ok("Final Jeopardy wagers locked.");
+    }
+
+    /**
+     * Moderator manually locks Final Jeopardy responses and starts the reveal phase.
+     */
+    public Map<String, Object> lockFinalResponses() {
+        boolean changed = false;
+        synchronized (this) {
+            if (state.phase != Phase.FINAL_RESPONSE) {
+                return error("Final Jeopardy responses are not open.");
+            }
+            clearCountdownLocked();
+            state.phase = Phase.FINAL_REVEAL;
+            state.finalRevealOrder.clear();
+            activeTeams().stream()
+                    .filter(team -> team.finalEligible)
+                    .sorted(Comparator.comparingInt(team -> team.score))
+                    .forEach(team -> state.finalRevealOrder.add(team.id));
+            state.finalRevealIndex = 0;
+            if (state.finalRevealOrder.isEmpty()) {
+                finishFinalRevealLocked();
+            } else {
+                TeamRuntime firstTeam = state.teamStates.get(state.finalRevealOrder.getFirst());
+                state.statusMessage = "Final Jeopardy responses locked by moderator. Reveal begins with " + firstTeam.name + ".";
+            }
+            changed = true;
+        }
+        if (changed) {
+            fireChange();
+        }
+        return ok("Final Jeopardy responses locked.");
+    }
+
+    /**
+     * Moderator manually advances past the current Final Jeopardy reveal team without scoring. Falls through to game end when the queue is exhausted.
+     */
+    public Map<String, Object> skipFinalRevealTeam() {
+        boolean changed = false;
+        String skippedTeamName = "Team";
+        synchronized (this) {
+            if (state.phase != Phase.FINAL_REVEAL) {
+                return error("Final Jeopardy reveal is not in progress.");
+            }
+            if (state.finalRevealOrder.isEmpty() || state.finalRevealIndex >= state.finalRevealOrder.size()) {
+                finishFinalRevealLocked();
+            } else {
+                TeamRuntime team = state.teamStates.get(state.finalRevealOrder.get(state.finalRevealIndex));
+                if (team != null) {
+                    skippedTeamName = team.name;
+                }
+                state.finalRevealIndex++;
+                if (state.finalRevealIndex >= state.finalRevealOrder.size()) {
+                    finishFinalRevealLocked();
+                } else {
+                    TeamRuntime nextTeam = state.teamStates.get(state.finalRevealOrder.get(state.finalRevealIndex));
+                    String nextName = nextTeam == null ? "next team" : nextTeam.name;
+                    state.statusMessage = skippedTeamName + " was skipped. Next up: " + nextName + ".";
+                }
+            }
+            changed = true;
+        }
+        if (changed) {
+            fireChange();
+        }
+        return ok("Skipped " + skippedTeamName + ".");
+    }
+
+    /**
+     * Moderator escape hatch that ends Final Jeopardy from any final phase, jumping straight to game over or tie-breaker.
+     */
+    public Map<String, Object> endFinalReveal() {
+        boolean changed = false;
+        synchronized (this) {
+            boolean inFinal = state.phase == Phase.FINAL_CATEGORY
+                    || state.phase == Phase.FINAL_WAGER
+                    || state.phase == Phase.FINAL_CLUE_READY
+                    || state.phase == Phase.FINAL_RESPONSE
+                    || state.phase == Phase.FINAL_REVEAL;
+            if (!inFinal) {
+                return error("Final Jeopardy is not in progress.");
+            }
+            clearCountdownLocked();
+            finishFinalRevealLocked();
+            changed = true;
+        }
+        if (changed) {
+            fireChange();
+        }
+        return ok("Final Jeopardy ended.");
+    }
+
+    /**
      * Starts the first tie-breaker clue when final scores end in a tie.
      */
     public Map<String, Object> startTieBreaker() {
@@ -782,29 +891,31 @@ public final class GameEngine {
     }
 
     /**
-     * Applies Final Jeopardy scoring in reveal order.
+     * Applies Final Jeopardy scoring in reveal order. Defensively advances even when state is partially broken so the moderator never gets stuck.
      */
     private boolean handleFinalJudgementLocked(boolean correct) {
         if (state.finalRevealOrder.isEmpty() || state.finalRevealIndex >= state.finalRevealOrder.size()) {
-            return false;
+            finishFinalRevealLocked();
+            return true;
         }
         TeamRuntime team = state.teamStates.get(state.finalRevealOrder.get(state.finalRevealIndex));
-        if (team == null) {
-            return false;
-        }
-        team.finalJudged = true;
-        team.finalResultCorrect = correct;
-        if (correct) {
-            team.score += team.finalWager;
-        } else {
-            team.score -= team.finalWager;
+        String judgedName = team == null ? "Team" : team.name;
+        if (team != null) {
+            team.finalJudged = true;
+            team.finalResultCorrect = correct;
+            if (correct) {
+                team.score += team.finalWager;
+            } else {
+                team.score -= team.finalWager;
+            }
         }
         state.finalRevealIndex++;
         if (state.finalRevealIndex >= state.finalRevealOrder.size()) {
             finishFinalRevealLocked();
         } else {
             TeamRuntime nextTeam = state.teamStates.get(state.finalRevealOrder.get(state.finalRevealIndex));
-            state.statusMessage = team.name + " judged " + (correct ? "correct" : "incorrect") + ". Next up: " + nextTeam.name + ".";
+            String nextName = nextTeam == null ? "next team" : nextTeam.name;
+            state.statusMessage = judgedName + " judged " + (correct ? "correct" : "incorrect") + ". Next up: " + nextName + ".";
         }
         return true;
     }
@@ -813,7 +924,7 @@ public final class GameEngine {
      * Decides whether Final Jeopardy produced a winner or needs a tie-breaker.
      */
     private void finishFinalRevealLocked() {
-        List<TeamRuntime> contenders = activeTeams();
+        List<TeamRuntime> contenders = new ArrayList<>(activeTeams());
         contenders.sort(Comparator.comparingInt((TeamRuntime team) -> team.score).reversed());
         TeamRuntime leader = contenders.isEmpty() ? null : contenders.getFirst();
         if (leader == null) {
@@ -972,8 +1083,7 @@ public final class GameEngine {
                     .forEach(team -> state.finalRevealOrder.add(team.id));
             state.finalRevealIndex = 0;
             if (state.finalRevealOrder.isEmpty()) {
-                state.phase = Phase.GAME_OVER;
-                state.statusMessage = "No teams were eligible for Final Jeopardy.";
+                finishFinalRevealLocked();
             } else {
                 TeamRuntime firstTeam = state.teamStates.get(state.finalRevealOrder.getFirst());
                 state.statusMessage = "Final Jeopardy responses are locked. Reveal begins with " + firstTeam.name + ".";
@@ -1045,6 +1155,7 @@ public final class GameEngine {
                         : "No teams were eligible for Final Jeopardy. " + leader.name + " won the game.";
                 return;
             }
+            state.currentRound = RoundType.FINAL;
             state.phase = Phase.FINAL_CATEGORY;
             state.statusMessage = "Final Jeopardy category revealed. Teams with scores above zero are eligible.";
             return;
@@ -1491,6 +1602,8 @@ public final class GameEngine {
         SINGLE,
         /** Higher-value Double Jeopardy round. */
         DOUBLE,
+        /** Final Jeopardy round, covering category, wager, response, and reveal phases. */
+        FINAL,
         /** Sudden-death tie-breaker round. */
         TIEBREAKER
     }
@@ -1695,6 +1808,7 @@ public final class GameEngine {
             Board board = switch (currentRound) {
                 case SINGLE -> definition.singleBoard;
                 case DOUBLE -> definition.doubleBoard;
+                case FINAL -> null;
                 case TIEBREAKER -> null;
             };
             map.put("currentBoard", board == null ? null : board.toMap(moderatorView));

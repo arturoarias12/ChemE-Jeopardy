@@ -292,7 +292,11 @@ public final class AppServer {
             case "/api/mod/adjust-score" -> handleModeratorFormPost(exchange, session, form ->
                     session.engine.adjustScore(form.getOrDefault("teamId", ""), parseInt(form.get("delta"))));
             case "/api/mod/start-final-wager" -> handleModeratorPostNoBody(exchange, session, session.engine::startFinalWager);
+            case "/api/mod/lock-final-wagers" -> handleModeratorPostNoBody(exchange, session, session.engine::lockFinalWagers);
             case "/api/mod/reveal-final-clue" -> handleModeratorPostNoBody(exchange, session, session.engine::revealFinalClue);
+            case "/api/mod/lock-final-responses" -> handleModeratorPostNoBody(exchange, session, session.engine::lockFinalResponses);
+            case "/api/mod/skip-final-team" -> handleModeratorPostNoBody(exchange, session, session.engine::skipFinalRevealTeam);
+            case "/api/mod/end-final-reveal" -> handleModeratorPostNoBody(exchange, session, session.engine::endFinalReveal);
             case "/api/mod/start-tiebreaker" -> handleModeratorPostNoBody(exchange, session, session.engine::startTieBreaker);
             case "/api/mod/next-tiebreaker" -> handleModeratorPostNoBody(exchange, session, session.engine::nextTieBreakerClue);
             default -> notFound(exchange);

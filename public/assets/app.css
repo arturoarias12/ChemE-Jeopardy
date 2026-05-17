@@ -740,6 +740,11 @@ input[type="radio"] {
     justify-content: flex-end;
 }
 
+#moderator-controls {
+    display: grid;
+    gap: 1rem;
+}
+
 .control-stack {
     display: grid;
     gap: 1rem;

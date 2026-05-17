@@ -273,8 +273,21 @@ function renderControls(snapshot) {
     if (game.phase === 'FINAL_CATEGORY') {
         actionButtons.push(controlButton('start-final-wager', 'Start Final Wager Timer', 'primary-button'));
     }
+    if (game.phase === 'FINAL_WAGER') {
+        actionButtons.push(controlButton('lock-final-wagers', 'Lock Wagers Now', 'ghost-button'));
+    }
     if (game.phase === 'FINAL_CLUE_READY') {
         actionButtons.push(controlButton('reveal-final-clue', 'Reveal Final Jeopardy Clue', 'primary-button'));
+    }
+    if (game.phase === 'FINAL_RESPONSE') {
+        actionButtons.push(controlButton('lock-final-responses', 'Lock Responses Now', 'ghost-button'));
+    }
+    if (game.phase === 'FINAL_REVEAL') {
+        actionButtons.push(controlButton('skip-final-team', 'Skip This Team', 'ghost-button'));
+    }
+    const finalPhases = ['FINAL_CATEGORY', 'FINAL_WAGER', 'FINAL_CLUE_READY', 'FINAL_RESPONSE', 'FINAL_REVEAL'];
+    if (finalPhases.includes(game.phase)) {
+        actionButtons.push(controlButton('end-final-reveal', 'End Final Jeopardy', 'danger-button'));
     }
     if (game.phase === 'TIEBREAKER_READY' && game.tiePending) {
         const action = game.round === 'TIEBREAKER' ? 'next-tiebreaker' : 'start-tiebreaker';
@@ -284,21 +297,90 @@ function renderControls(snapshot) {
     controls.push(`<div class="control-stack">${actionButtons.join('')}</div>`);
     controls.push(renderManualScoring(teams));
 
-    if (game.phase === 'FINAL_REVEAL') {
-        const team = teams.find(entry => entry.id === game.finalRevealTeamId);
-        if (team) {
-            controls.push(`
-                <article class="detail-card">
-                    <span class="label">Current Final Jeopardy Reveal</span>
-                    <div class="value">${escapeHtml(team.name)}</div>
-                    <p><strong>Wager:</strong> ${team.finalWager ?? 0}</p>
-                    <p><strong>Response:</strong> ${escapeHtml(team.finalResponse || 'No response submitted')}</p>
-                </article>
-            `);
-        }
+    const inFinalActive = finalPhases.includes(game.phase);
+    const finalJustEnded = (game.phase === 'GAME_OVER' || game.phase === 'TIEBREAKER_READY')
+        && (game.round === 'FINAL' || game.round === 'TIEBREAKER');
+    if (inFinalActive || finalJustEnded) {
+        controls.push(renderFinalJeopardyControlsCard(game, teams));
     }
 
     return controls.join('');
+}
+
+function renderFinalJeopardyControlsCard(game, teams) {
+    const isFinalReveal = game.phase === 'FINAL_REVEAL';
+    const isGameOver = game.phase === 'GAME_OVER';
+    const isTieReady = game.phase === 'TIEBREAKER_READY';
+    const winner = isGameOver ? teams.find(t => t.id === game.winnerTeamId) : null;
+
+    let header;
+    if (winner) {
+        header = `<div class="value">Game Over &mdash; ${escapeHtml(winner.name)} wins with ${winner.score} points</div>`;
+    } else if (isGameOver) {
+        header = `<div class="value">Game Over</div>`;
+    } else if (isTieReady) {
+        header = `<div class="value">Tie-Breaker Ready</div>`;
+    } else {
+        header = `<div class="value">${humanize(game.phase)}</div>`;
+    }
+
+    const statusLine = game.statusMessage
+        ? `<p>${escapeHtml(game.statusMessage)}</p>`
+        : '';
+
+    let currentBlock = '';
+    if (isFinalReveal && game.finalRevealTeamId) {
+        const current = teams.find(t => t.id === game.finalRevealTeamId);
+        if (current) {
+            currentBlock = `
+                <p><strong>Now revealing:</strong> ${escapeHtml(current.name)}</p>
+                <p><strong>Wager:</strong> ${current.finalWager ?? 0}</p>
+                <p><strong>Response:</strong> ${escapeHtml(current.finalResponse || 'No response submitted')}</p>
+            `;
+        }
+    }
+
+    const participatedTeams = teams.filter(t =>
+        t.finalEligible || t.finalWagerSubmitted || t.finalResponseSubmitted || t.finalJudged);
+    let teamsBlock = '';
+    if (participatedTeams.length) {
+        const cards = participatedTeams.map(team => {
+            const isCurrent = isFinalReveal && team.id === game.finalRevealTeamId;
+            const bits = [];
+            if (team.finalWagerSubmitted || team.finalJudged) {
+                bits.push(`Wager ${team.finalWager ?? 0}`);
+            } else if (team.finalEligible) {
+                bits.push('Wager pending');
+            }
+            if (team.finalResponseSubmitted || team.finalJudged) {
+                bits.push(team.finalResponse ? 'Response submitted' : 'Response blank');
+            } else if (team.finalEligible) {
+                bits.push('Response pending');
+            }
+            if (team.finalJudged) {
+                bits.push(team.finalResultCorrect ? 'Marked correct' : 'Marked incorrect');
+            }
+            const tag = isCurrent ? ' &mdash; current' : '';
+            return `
+                <div class="team-editor">
+                    <div class="value">${escapeHtml(team.name)}${tag}</div>
+                    <p>Score: ${team.score}</p>
+                    <p>${bits.join(' &middot; ') || 'Awaiting input'}</p>
+                </div>
+            `;
+        }).join('');
+        teamsBlock = `<div class="team-grid">${cards}</div>`;
+    }
+
+    return `
+        <article class="detail-card">
+            <span class="label">Final Jeopardy</span>
+            ${header}
+            ${statusLine}
+            ${currentBlock}
+            ${teamsBlock}
+        </article>
+    `;
 }
 
 function renderManualScoring(teams) {
@@ -848,7 +930,11 @@ async function handleControlClick(event) {
         'continue': '/api/mod/continue',
         'start-daily-double': '/api/mod/start-daily-double',
         'start-final-wager': '/api/mod/start-final-wager',
+        'lock-final-wagers': '/api/mod/lock-final-wagers',
         'reveal-final-clue': '/api/mod/reveal-final-clue',
+        'lock-final-responses': '/api/mod/lock-final-responses',
+        'skip-final-team': '/api/mod/skip-final-team',
+        'end-final-reveal': '/api/mod/end-final-reveal',
         'start-tiebreaker': '/api/mod/start-tiebreaker',
         'next-tiebreaker': '/api/mod/next-tiebreaker',
     }[action];

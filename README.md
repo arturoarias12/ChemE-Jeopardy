@@ -260,6 +260,23 @@ Set secrets in the cloud dashboard, not in GitHub:
 CHEME_MODERATOR_PASSWORD
 ```
 
+## Security And Intended Use
+
+This app is designed for controlled classroom, review-session, and temporary event use. It can be run locally, on a classroom network, or behind a temporary cloud URL shared only with participants.
+
+It is not intended to be a permanently exposed public web service without additional hardening.
+
+Recommended use:
+
+- Set a fresh `CHEME_MODERATOR_PASSWORD` for each event.
+- Use separate moderator and player passwords for each game room.
+- Share game links only with participants.
+- Shut down temporary cloud deployments after the event.
+- Do not use public GitHub question files for live competitions where players should not see the answer key.
+- Store real secrets in `.env` or the cloud host's secret settings, never in Git.
+
+For permanent public deployment, add protections such as rate limiting, stricter upload/body limits, HTTPS-only secure cookies, and restricted server-side file loading.
+
 ## Moderator Flow
 
 1. Open `/` or `/games`.

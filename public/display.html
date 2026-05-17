@@ -1,0 +1,27 @@
+<!doctype html>
+<!--
+File: display.html
+Description: Read-only room display showing the board, clue prompt, answer reveal, and team scores.
+Author: Arturo Arias
+Last updated: 2026-05-04
+-->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ChemE Jeopardy Display</title>
+    <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body class="display-page">
+    <main class="display-shell">
+        <section class="display-scorebar" id="display-scorebar"></section>
+        <section class="display-stage" id="display-stage">
+            <div class="display-loading">Loading</div>
+        </section>
+    </main>
+
+    <noscript>This app needs JavaScript enabled.</noscript>
+    <script src="/assets/theme.js" defer></script>
+    <script src="/assets/display.js" defer></script>
+</body>
+</html>

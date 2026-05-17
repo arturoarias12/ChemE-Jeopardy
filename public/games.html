@@ -1,0 +1,98 @@
+<!doctype html>
+<!--
+File: games.html
+Description: Master game-instance manager for ChemE Jeopardy.
+Author: Arturo Arias
+Last updated: 2026-05-15
+-->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Game Manager</title>
+    <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body class="moderator-page">
+    <header class="hero">
+        <div>
+            <p class="eyebrow">Admin Home</p>
+            <h1>Game Manager</h1>
+            <p class="hero-copy">Create independent live game rooms, upload or select question sets, and manage each room's public URL and display title.</p>
+        </div>
+        <div class="hero-chip" id="master-status-chip">Loading</div>
+    </header>
+
+    <main class="page-shell">
+        <section class="panel">
+            <div class="panel-head">
+                <h2>Active Games</h2>
+                <button class="button ghost-button" type="button" id="refresh-games-button">Refresh</button>
+            </div>
+            <div id="games-list" class="game-grid"></div>
+        </section>
+
+        <section class="panel auth-panel" id="master-login-shell">
+            <div class="panel-head">
+                <h2>Manager Login</h2>
+            </div>
+            <form id="master-login-form" class="stack-form">
+                <label class="input-group">
+                    <span>Password</span>
+                    <input type="password" id="master-password" autocomplete="current-password">
+                </label>
+                <button class="button primary-button" type="submit">Unlock Game Manager</button>
+            </form>
+        </section>
+
+        <section class="panel hidden" id="game-create-shell">
+            <div class="panel-head">
+                <h2>Create Game</h2>
+                <button class="button ghost-button" type="button" id="master-logout-button">Lock Manager</button>
+            </div>
+            <form id="create-game-form" class="stack-form">
+                <div class="setup-subgrid">
+                    <label class="input-group">
+                        <span>Game URL slug</span>
+                        <input type="text" id="new-game-id" placeholder="game-n" pattern="[a-z0-9][a-z0-9-]*">
+                    </label>
+                    <label class="input-group">
+                        <span>Display title</span>
+                        <input type="text" id="new-game-name" placeholder="Room N">
+                    </label>
+                    <label class="input-group">
+                        <span>Moderator password</span>
+                        <input type="password" id="new-game-moderator-password" autocomplete="new-password">
+                    </label>
+                    <label class="input-group">
+                        <span>Initial player password</span>
+                        <input type="password" id="new-game-player-password" autocomplete="new-password">
+                    </label>
+                </div>
+                <fieldset class="source-choice">
+                    <legend>Question JSON</legend>
+                    <label class="source-option">
+                        <input type="radio" name="questionSource" value="default" checked>
+                        <span>
+                            <strong>Use default question JSON</strong>
+                            <small>Loads the app's bundled data/game-definition.json.</small>
+                        </span>
+                    </label>
+                    <label class="source-option">
+                        <input type="radio" name="questionSource" value="upload">
+                        <span>
+                            <strong>Upload question JSON or image package</strong>
+                            <small>Use .json for text-only games, or .zip/.chemej with game.json and images/.</small>
+                        </span>
+                    </label>
+                    <input type="file" id="new-game-upload" class="hidden" accept=".json,.zip,.chemej,application/json,application/zip">
+                </fieldset>
+                <button class="button primary-button" type="submit">Create Game</button>
+            </form>
+        </section>
+    </main>
+
+    <div id="toast" class="toast"></div>
+    <noscript>This app needs JavaScript enabled.</noscript>
+    <script src="/assets/games.js" defer></script>
+</body>
+</html>

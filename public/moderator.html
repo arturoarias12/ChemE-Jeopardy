@@ -1,0 +1,161 @@
+<!doctype html>
+<!--
+File: moderator.html
+Description: Moderator-facing browser console for setup, access control, clue control, and scoring.
+Author: Arturo Arias
+Last updated: 2026-05-04
+-->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ChemE Jeopardy Moderator</title>
+    <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body class="moderator-page">
+    <header class="hero">
+        <div>
+            <p class="eyebrow">ChemE Jeopardy</p>
+            <h1>Moderator Console</h1>
+            <p class="hero-copy">Manage this game room, track player joins, load the question set, judge responses, and run Final Jeopardy from one control room.</p>
+        </div>
+        <div class="hero-chip" id="moderator-phase-chip">Loading</div>
+    </header>
+
+    <main class="page-shell auth-shell" id="moderator-login-shell">
+        <section class="panel auth-panel">
+            <div class="panel-head">
+                <h2>Moderator Login</h2>
+            </div>
+            <form id="moderator-login-form" class="stack-form">
+                <label class="input-group">
+                    <span>Password</span>
+                    <input type="password" id="moderator-password" autocomplete="current-password" autofocus>
+                </label>
+                <button class="button primary-button" type="submit">Unlock Moderator Console</button>
+            </form>
+        </section>
+    </main>
+
+    <main class="page-shell hidden" id="moderator-app-shell">
+        <section class="panel">
+            <div class="panel-head">
+                <h2>Live Match State</h2>
+            </div>
+            <div class="status-grid" id="moderator-status-grid"></div>
+            <div id="moderator-alert" class="alert-banner"></div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
+                <h2>Access Control</h2>
+                <button class="button ghost-button" type="button" id="moderator-logout-button">Lock Console</button>
+            </div>
+            <form id="player-password-form" class="stack-form">
+                <label class="input-group">
+                    <span>Player password</span>
+                    <input type="password" id="player-password" autocomplete="new-password" placeholder="Set or change player access">
+                </label>
+                <div id="player-password-status" class="minor-note"></div>
+                <button class="button primary-button" type="submit">Save Player Password</button>
+            </form>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
+                <h2>Appearance</h2>
+            </div>
+            <div class="theme-grid">
+                <form id="moderator-theme-form" class="theme-card">
+                    <span class="label">Moderator View</span>
+                    <div class="theme-controls">
+                        <label class="input-group">
+                            <span>Color</span>
+                            <select id="moderator-theme-color">
+                                <option value="blue">Blue</option>
+                                <option value="black">Black</option>
+                                <option value="red">Red</option>
+                                <option value="green">Green</option>
+                            </select>
+                        </label>
+                        <label class="input-group">
+                            <span>Mode</span>
+                            <select id="moderator-theme-mode">
+                                <option value="dark">Dark</option>
+                                <option value="light">Light</option>
+                            </select>
+                        </label>
+                    </div>
+                </form>
+                <form id="display-theme-form" class="theme-card">
+                    <span class="label">Display View</span>
+                    <div class="theme-controls">
+                        <label class="input-group">
+                            <span>Color</span>
+                            <select id="display-theme-color">
+                                <option value="blue">Blue</option>
+                                <option value="black">Black</option>
+                                <option value="red">Red</option>
+                                <option value="green">Green</option>
+                            </select>
+                        </label>
+                        <label class="input-group">
+                            <span>Mode</span>
+                            <select id="display-theme-mode">
+                                <option value="dark">Dark</option>
+                                <option value="light">Light</option>
+                            </select>
+                        </label>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
+                <h2>Player Roster</h2>
+            </div>
+            <div id="moderator-roster"></div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
+                <h2>Live Controls</h2>
+            </div>
+            <div id="moderator-controls"></div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
+                <h2>Current Board</h2>
+            </div>
+            <div id="moderator-board"></div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
+                <h2>Final Jeopardy And Tie-Breakers</h2>
+            </div>
+            <div id="moderator-final-panel"></div>
+        </section>
+
+        <section class="panel">
+            <div class="panel-head">
+                <h2>Pre-Game Setup</h2>
+                <div class="button-row">
+                    <button class="button primary-button" type="button" id="save-definition-button">Save Settings</button>
+                    <button class="button ghost-button" type="button" id="reset-runtime-button">Reset Runtime</button>
+                    <button class="button primary-button" type="button" id="start-game-button">Start Game</button>
+                </div>
+            </div>
+            <div id="setup-lock-note" class="minor-note"></div>
+            <div id="setup-editors"></div>
+        </section>
+    </main>
+
+    <div id="toast" class="toast"></div>
+    <noscript>This app needs JavaScript enabled.</noscript>
+    <script src="/assets/theme.js" defer></script>
+    <script src="/assets/moderator.js" defer></script>
+</body>
+</html>

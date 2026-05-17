@@ -1,0 +1,19 @@
+# File: .gitignore
+# Description: Local-only and generated files that should not be uploaded to GitHub.
+# Author: Arturo Arias
+# Last updated: 2026-05-16
+
+out/
+other_files/
+tmp/
+tools-src/
+tmp-build/
+__pycache__/
+*.pyc
+arturo_test.py
+tests.py
+.env
+.env.local
+project_report.html
+cheme_jeopardy_rules_and_instructions.pdf
+.claude/

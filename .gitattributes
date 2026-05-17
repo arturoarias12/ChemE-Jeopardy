@@ -1,0 +1,13 @@
+# File: .gitattributes
+# Description: Repository text normalization for GitHub uploads.
+# Author: Arturo Arias
+# Last updated: 2026-05-04
+
+* text=auto
+*.java text eol=lf
+*.js text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.ps1 text eol=crlf

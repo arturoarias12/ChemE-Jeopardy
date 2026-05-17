@@ -1,0 +1,111 @@
+<!doctype html>
+<!--
+File: player.html
+Description: Player-facing browser console for joining teams, syncing clocks, buzzing, and submitting wagers.
+Author: Arturo Arias
+Last updated: 2026-05-04
+-->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ChemE Jeopardy Player</title>
+    <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body class="player-page">
+    <header class="hero">
+        <div>
+            <p class="eyebrow">ChemE Jeopardy</p>
+            <h1>Player</h1>
+            <p class="hero-copy">Join a team, stay ready, and buzz when the clue opens.</p>
+        </div>
+        <div class="hero-chip" id="player-identity-chip">Not joined yet</div>
+    </header>
+
+    <main class="page-shell">
+        <section class="panel">
+            <div class="panel-head">
+                <h2>Theme</h2>
+            </div>
+            <div class="theme-controls">
+                <label class="input-group">
+                    <span>Color</span>
+                    <select id="player-theme-color">
+                        <option value="blue">Blue</option>
+                        <option value="black">Black</option>
+                        <option value="red">Red</option>
+                        <option value="green">Green</option>
+                    </select>
+                </label>
+                <label class="input-group">
+                    <span>Mode</span>
+                    <select id="player-theme-mode">
+                        <option value="system">System</option>
+                        <option value="dark">Dark</option>
+                        <option value="light">Light</option>
+                    </select>
+                </label>
+            </div>
+        </section>
+
+        <section class="panel" id="join-panel">
+            <div class="panel-head">
+                <h2>Join A Team</h2>
+            </div>
+            <form id="join-form" class="stack-form">
+                <label class="input-group">
+                    <span>Display name</span>
+                    <input type="text" id="display-name" name="displayName" maxlength="40" placeholder="Alex">
+                </label>
+                <label class="input-group">
+                    <span>Team</span>
+                    <select id="team-select" name="teamId" class="hidden"></select>
+                </label>
+                <div class="join-team-grid" id="join-team-grid"></div>
+                <label class="input-group">
+                    <span>Player password</span>
+                    <input type="password" id="join-password" name="joinPassword" autocomplete="current-password" placeholder="Ask the moderator">
+                </label>
+                <div id="player-join-note" class="minor-note"></div>
+                <button class="button primary-button" id="join-submit-button" type="submit">Join Team</button>
+            </form>
+        </section>
+
+        <section class="player-app-shell hidden" id="player-app-shell">
+            <section class="panel spotlight-panel player-focus-panel">
+                <div class="panel-head">
+                    <h2>Buzz Console</h2>
+                    <div class="button-row">
+                        <button class="button ghost-button" id="resync-button" type="button">Resync Clock</button>
+                        <button class="button ghost-button" id="clear-session-button" type="button">Clear Session</button>
+                    </div>
+                </div>
+                <div id="player-alert" class="alert-banner"></div>
+                <div id="active-clue-panel"></div>
+                <div id="player-controls-panel"></div>
+            </section>
+
+            <details class="panel player-details-panel">
+                <summary>Scores</summary>
+                <div class="team-grid" id="player-scoreboard"></div>
+            </details>
+
+            <details class="panel player-details-panel">
+                <summary>Board</summary>
+                <div id="player-board"></div>
+            </details>
+
+            <details class="panel player-details-panel">
+                <summary>Match Details</summary>
+                <div class="status-grid" id="player-status-grid"></div>
+                <div id="player-final-panel"></div>
+            </details>
+        </section>
+    </main>
+
+    <div id="toast" class="toast"></div>
+    <noscript>This app needs JavaScript enabled.</noscript>
+    <script src="/assets/theme.js" defer></script>
+    <script src="/assets/player.js" defer></script>
+</body>
+</html>

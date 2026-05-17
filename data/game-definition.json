@@ -1,0 +1,680 @@
+{
+    "title":  "ChemE Jeopardy",
+    "config":  {
+                   "teamCount":  4,
+                   "maxPlayersPerTeam":  1,
+                   "categoryCount":  6,
+                   "cluesPerCategory":  5,
+                   "singleBaseValue":  100,
+                   "doubleBaseValue":  200,
+                   "buzzWindowSeconds":  5,
+                   "responseWindowSeconds":  5,
+                   "dailyDoubleResponseSeconds":  10,
+                   "finalWagerSeconds":  30,
+                   "finalResponseSeconds":  30,
+                   "includeDoubleJeopardy":  true,
+                   "includeFinalJeopardy":  true
+               },
+    "teams":  [
+                  {
+                      "id":  "team-1",
+                      "name":  "Team 1",
+                      "color":  "#355bd0",
+                      "active":  true
+                  },
+                  {
+                      "id":  "team-2",
+                      "name":  "Team 2",
+                      "color":  "#ef476f",
+                      "active":  true
+                  },
+                  {
+                      "id":  "team-3",
+                      "name":  "Team 3",
+                      "color":  "#06d6a0",
+                      "active":  true
+                  },
+                  {
+                      "id":  "team-4",
+                      "name":  "Team 4",
+                      "color":  "#118ab2",
+                      "active":  true
+                  }
+              ],
+    "singleBoard":  {
+                        "key":  "single",
+                        "title":  "Jeopardy",
+                        "categories":  [
+                                           {
+                                               "id":  "single-category-1",
+                                               "name":  "Thermodynamics",
+                                               "clues":  [
+                                                             {
+                                                                 "id":  "single-c1-q1",
+                                                                 "categoryName":  "Thermodynamics",
+                                                                 "value":  100,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "Static condition in which no changes occur in the macroscopic properties of a system with time.",
+                                                                 "response":  "What is equilibrium?"
+                                                             },
+                                                             {
+                                                                 "id":  "single-c1-q2",
+                                                                 "categoryName":  "Thermodynamics",
+                                                                 "value":  200,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "Condition when a boiling liquid mixture produces a vapor of exactly the same composition as it evaporates.",
+                                                                 "response":  "What is an azeotrope?"
+                                                             },
+                                                             {
+                                                                 "id":  "single-c1-q3",
+                                                                 "categoryName":  "Thermodynamics",
+                                                                 "value":  300,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "An enthalpy-entropy diagram is also call this",
+                                                                 "response":  "What is a Mollier diagram?"
+                                                             },
+                                                             {
+                                                                 "id":  "single-c1-q4",
+                                                                 "categoryName":  "Thermodynamics",
+                                                                 "value":  400,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "The third law of thermodynamics specifies this property as zero for perfect crystalline substances at absolute zero temperature.",
+                                                                 "response":  "What is entropy?"
+                                                             },
+                                                             {
+                                                                 "id":  "single-c1-q5",
+                                                                 "categoryName":  "Thermodynamics",
+                                                                 "value":  500,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "A constant volume process is also called this",
+                                                                 "response":  "What is an isochoric process?"
+                                                             }
+                                                         ]
+                                           },
+                                           {
+                                               "id":  "single-category-2",
+                                               "name":  "Chemical Process Safety",
+                                               "clues":  [
+                                                             {
+                                                                 "id":  "single-c2-q1",
+                                                                 "categoryName":  "Chemical Process Safety",
+                                                                 "value":  100,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "This Federal Agency is charged with enforcement of safety and health legislation",
+                                                                 "response":  "What is OSHA (Occupational Safety and Health Administration)?"
+                                                             },
+                                                             {
+                                                                 "id":  "single-c2-q2",
+                                                                 "categoryName":  "Chemical Process Safety",
+                                                                 "value":  200,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "Device that limits the pressure increase in a system or vessel",
+                                                                 "response":  "What is a relief valve?"
+                                                             },
+                                                             {
+                                                                 "id":  "single-c2-q3",
+                                                                 "categoryName":  "Chemical Process Safety",
+                                                                 "value":  300,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  true,
+                                                                 "prompt":  "The 3 sides of the fire triangle.",
+                                                                 "response":  "What are oxidizer, fuel and ignition source?"
+                                                             },
+                                                             {
+                                                                 "id":  "single-c2-q4",
+                                                                 "categoryName":  "Chemical Process Safety",
+                                                                 "value":  400,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "This is the temperature above which adequate energy is available in the environment to provide an ignition source",
+                                                                 "response":  "What is the Autoignition Temperature (AIT)?"
+                                                             },
+                                                             {
+                                                                 "id":  "single-c2-q5",
+                                                                 "categoryName":  "Chemical Process Safety",
+                                                                 "value":  500,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "These are the 4 major methods for achieving Inherently Safer Design",
+                                                                 "response":  "What are minimize, substitute, moderate and simplify?"
+                                                             }
+                                                         ]
+                                           },
+                                           {
+                                               "id":  "single-category-3",
+                                               "name":  "Fluid Flow",
+                                               "clues":  [
+                                                             {
+                                                                 "id":  "single-c3-q1",
+                                                                 "categoryName":  "Fluid Flow",
+                                                                 "value":  100,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "This equation used to calculate the fanning friction factor for laminar flow.",
+                                                                 "response":  "What is 16/RE?"
+                                                             },
+                                                             {
+                                                                 "id":  "single-c3-q2",
+                                                                 "categoryName":  "Fluid Flow",
+                                                                 "value":  200,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "A pump characterized by approximately constant head, but with flowrates that increase or decrease depending on the system resistance.",
+                                                                 "response":  "What is a centrifugal pump?"
+                                                             },
+                                                             {
+                                                                 "id":  "single-c3-q3",
+                                                                 "categoryName":  "Fluid Flow",
+                                                                 "value":  300,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "Equation used to determine the pressure drop across a packed bed.",
+                                                                 "response":  "What is the Ergun equation?"
+                                                             },
+                                                             {
+                                                                 "id":  "single-c3-q4",
+                                                                 "categoryName":  "Fluid Flow",
+                                                                 "value":  400,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "A situation where the drag force on a falling object is balanced by the gravity and buoyant forces.",
+                                                                 "response":  "What is terminal velocity?"
+                                                             },
+                                                             {
+                                                                 "id":  "single-c3-q5",
+                                                                 "categoryName":  "Fluid Flow",
+                                                                 "value":  500,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "The assumption that the fluid velocity at a stationary surface is equal to zero is called this.",
+                                                                 "response":  "What is the no slip condition?"
+                                                             }
+                                                         ]
+                                           },
+                                           {
+                                               "id":  "single-category-4",
+                                               "name":  "Chemical Reaction Engineering",
+                                               "clues":  [
+                                                             {
+                                                                 "id":  "single-c4-q1",
+                                                                 "categoryName":  "Chemical Reaction Engineering",
+                                                                 "value":  100,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "The temperature dependence of a chemical reaction is commonly described through the use of this equation.",
+                                                                 "response":  "What is the Arrhenius equation?"
+                                                             },
+                                                             {
+                                                                 "id":  "single-c4-q2",
+                                                                 "categoryName":  "Chemical Reaction Engineering",
+                                                                 "value":  200,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "This reactor type is essentially a heat exchanger.",
+                                                                 "response":  "What is a plug flow reactor (PFR)?"
+                                                             },
+                                                             {
+                                                                 "id":  "single-c4-q3",
+                                                                 "categoryName":  "Chemical Reaction Engineering",
+                                                                 "value":  300,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "This reactor type has no inflow or outflow.",
+                                                                 "response":  "What is a batch reactor?"
+                                                             },
+                                                             {
+                                                                 "id":  "single-c4-q4",
+                                                                 "categoryName":  "Chemical Reaction Engineering",
+                                                                 "value":  400,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "This dimensionless number, given by 𝜏𝜏k for a first-order reaction, provides an estimate of the conversion in a CSTR.",
+                                                                 "response":  "What is the Damköhler number?"
+                                                             },
+                                                             {
+                                                                 "id":  "single-c4-q5",
+                                                                 "categoryName":  "Chemical Reaction Engineering",
+                                                                 "value":  500,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "This happens when a catalyst is chemically deactivated.",
+                                                                 "response":  "What is poisoned? (Poisoning, catalytic poisoning)"
+                                                             }
+                                                         ]
+                                           },
+                                           {
+                                               "id":  "single-category-5",
+                                               "name":  "Material and Energy Balances",
+                                               "clues":  [
+                                                             {
+                                                                 "id":  "single-c5-q1",
+                                                                 "categoryName":  "Material and Energy Balances",
+                                                                 "value":  100,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "Input – Output = this",
+                                                                 "response":  "What is accumulation?"
+                                                             },
+                                                             {
+                                                                 "id":  "single-c5-q2",
+                                                                 "categoryName":  "Material and Energy Balances",
+                                                                 "value":  200,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "Enthalpy change required for a solid to become a liquid at a specific temperature and pressure",
+                                                                 "response":  "What is the latent heat of fusion?"
+                                                             },
+                                                             {
+                                                                 "id":  "single-c5-q3",
+                                                                 "categoryName":  "Material and Energy Balances",
+                                                                 "value":  300,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "When a vapor is cooled slowly at constant pressure, this is the temperature at which the first liquid droplet forms.",
+                                                                 "response":  "What is the dew-point temperature?"
+                                                             },
+                                                             {
+                                                                 "id":  "single-c5-q4",
+                                                                 "categoryName":  "Material and Energy Balances",
+                                                                 "value":  400,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "This chart contains the web-bulb temperature, dry-bulb temperature, relative humidity and other parameters.",
+                                                                 "response":  "What is a psychrometric chart? or What is a humidity chart?"
+                                                             },
+                                                             {
+                                                                 "id":  "single-c5-q5",
+                                                                 "categoryName":  "Material and Energy Balances",
+                                                                 "value":  500,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "The process of contacting a stream of warm gas with a stream of cold liquid that results in gas cooling and liquid evaporation",
+                                                                 "response":  "What is adiabatic cooling?"
+                                                             }
+                                                         ]
+                                           },
+                                           {
+                                               "id":  "single-category-6",
+                                               "name":  "Separations",
+                                               "clues":  [
+                                                             {
+                                                                 "id":  "single-c6-q1",
+                                                                 "categoryName":  "Separations",
+                                                                 "value":  100,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "This separation technique accounts for 90-95% of all separations in the chemical process industry.",
+                                                                 "response":  "What is Distillation?"
+                                                             },
+                                                             {
+                                                                 "id":  "single-c6-q2",
+                                                                 "categoryName":  "Separations",
+                                                                 "value":  200,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "Method used to separate solids from fluids by interposing a medium through which only the fluid can pass.",
+                                                                 "response":  "What is filtration?"
+                                                             },
+                                                             {
+                                                                 "id":  "single-c6-q3",
+                                                                 "categoryName":  "Separations",
+                                                                 "value":  300,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "A simplified version of this separation process is seen in a coffee or tea maker.",
+                                                                 "response":  "What is Leaching?"
+                                                             },
+                                                             {
+                                                                 "id":  "single-c6-q4",
+                                                                 "categoryName":  "Separations",
+                                                                 "value":  400,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "The amount of condensed distillate returned to the top of a distillation column, relative to the amount removed as a product.",
+                                                                 "response":  "What is the reflux ratio?"
+                                                             },
+                                                             {
+                                                                 "id":  "single-c6-q5",
+                                                                 "categoryName":  "Separations",
+                                                                 "value":  500,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "A relationship between adsorbed and non-adsorbed solute in which the adsorbent may become completely saturated.",
+                                                                 "response":  "What is a Langmuir isotherm? Equations"
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    },
+    "doubleBoard":  {
+                        "key":  "double",
+                        "title":  "Double Jeopardy",
+                        "categories":  [
+                                           {
+                                               "id":  "double-category-1",
+                                               "name":  "Heat Transfer",
+                                               "clues":  [
+                                                             {
+                                                                 "id":  "double-c1-q1",
+                                                                 "categoryName":  "Heat Transfer",
+                                                                 "value":  200,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "These are the three fundamental mechanisms of heat transfer.",
+                                                                 "response":  "What are conduction, convection, and radiation?"
+                                                             },
+                                                             {
+                                                                 "id":  "double-c1-q2",
+                                                                 "categoryName":  "Heat Transfer",
+                                                                 "value":  400,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "This type of temperature difference is commonly used in heat exchanger design.",
+                                                                 "response":  "What is the log-mean temperature difference?"
+                                                             },
+                                                             {
+                                                                 "id":  "double-c1-q3",
+                                                                 "categoryName":  "Heat Transfer",
+                                                                 "value":  600,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "The dimensionless ratio of convective heat transfer to conductive heat transfer.",
+                                                                 "response":  "What is the Nusselt number?"
+                                                             },
+                                                             {
+                                                                 "id":  "double-c1-q4",
+                                                                 "categoryName":  "Heat Transfer",
+                                                                 "value":  800,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "A physical constant used in radiation heat transfer calculations, with dimensions of power per area per temperature raised to the 4th power.",
+                                                                 "response":  "What is the Stefan-Boltzmann constant?"
+                                                             },
+                                                             {
+                                                                 "id":  "double-c1-q5",
+                                                                 "categoryName":  "Heat Transfer",
+                                                                 "value":  1000,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "Assumption made when the Biot Number is less than 0.1.",
+                                                                 "response":  "What is the lumped solution assumption? (Uniform temperature throughout body during transient heat transfer)."
+                                                             }
+                                                         ]
+                                           },
+                                           {
+                                               "id":  "double-category-2",
+                                               "name":  "Mass Transfer",
+                                               "clues":  [
+                                                             {
+                                                                 "id":  "double-c2-q1",
+                                                                 "categoryName":  "Mass Transfer",
+                                                                 "value":  200,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "The proportionality between a chemical’s flux and its concentration gradient.",
+                                                                 "response":  "What is the diffusion coefficient?"
+                                                             },
+                                                             {
+                                                                 "id":  "double-c2-q2",
+                                                                 "categoryName":  "Mass Transfer",
+                                                                 "value":  400,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "During steady-state diffusion into a sphere, the location where the concentration gradient is the steepest.",
+                                                                 "response":  "Where is the center?"
+                                                             },
+                                                             {
+                                                                 "id":  "double-c2-q3",
+                                                                 "categoryName":  "Mass Transfer",
+                                                                 "value":  600,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "His second law stipulates that the rate of local concentration change is proportional to the concentration’s second spatial derivative.",
+                                                                 "response":  "Who is Adolf Fick?"
+                                                             },
+                                                             {
+                                                                 "id":  "double-c2-q4",
+                                                                 "categoryName":  "Mass Transfer",
+                                                                 "value":  800,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "The ratio of convective mass transport to diffusive mass transport.",
+                                                                 "response":  "What is the Sherwood Number?"
+                                                             },
+                                                             {
+                                                                 "id":  "double-c2-q5",
+                                                                 "categoryName":  "Mass Transfer",
+                                                                 "value":  1000,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "A chemical’s concentration during non-steady state diffusion from a constant source has the same dependence on distance as it has on this power of time.",
+                                                                 "response":  "What is -1/2?"
+                                                             }
+                                                         ]
+                                           },
+                                           {
+                                               "id":  "double-category-3",
+                                               "name":  "Process Control",
+                                               "clues":  [
+                                                             {
+                                                                 "id":  "double-c3-q1",
+                                                                 "categoryName":  "Process Control",
+                                                                 "value":  200,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "This parameter is the time it takes for a first order system to reach 63% of the change in output",
+                                                                 "response":  "What is the time constant?"
+                                                             },
+                                                             {
+                                                                 "id":  "double-c3-q2",
+                                                                 "categoryName":  "Process Control",
+                                                                 "value":  400,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "This mode of the PID controller eliminates offset",
+                                                                 "response":  "What is integral mode?"
+                                                             },
+                                                             {
+                                                                 "id":  "double-c3-q3",
+                                                                 "categoryName":  "Process Control",
+                                                                 "value":  600,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  true,
+                                                                 "prompt":  "This type of function in the Laplace domain relates the output to the input",
+                                                                 "response":  "What is a transfer function?"
+                                                             },
+                                                             {
+                                                                 "id":  "double-c3-q4",
+                                                                 "categoryName":  "Process Control",
+                                                                 "value":  800,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "This type of control measures disturbances and compensates for them before the output changes",
+                                                                 "response":  "What is feedforward control?"
+                                                             },
+                                                             {
+                                                                 "id":  "double-c3-q5",
+                                                                 "categoryName":  "Process Control",
+                                                                 "value":  1000,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "This type of plot is a graph of amplitude ratio and phase angle versus input frequency",
+                                                                 "response":  "What is a Bode plot?"
+                                                             }
+                                                         ]
+                                           },
+                                           {
+                                               "id":  "double-category-4",
+                                               "name":  "Process Design",
+                                               "clues":  [
+                                                             {
+                                                                 "id":  "double-c4-q1",
+                                                                 "categoryName":  "Process Design",
+                                                                 "value":  200,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "This is added to the depreciation charge to obtain the cash flow.",
+                                                                 "response":  "What is the net profit?"
+                                                             },
+                                                             {
+                                                                 "id":  "double-c4-q2",
+                                                                 "categoryName":  "Process Design",
+                                                                 "value":  400,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "Nonmanufacturing fixed-capital investment is also known as this.",
+                                                                 "response":  "What are indirect costs?"
+                                                             },
+                                                             {
+                                                                 "id":  "double-c4-q3",
+                                                                 "categoryName":  "Process Design",
+                                                                 "value":  600,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "These are the 3 main factors that determine the capital cost of a specific piece of equipment at a given time.",
+                                                                 "response":  "What are size/capacity, material of construction, and operating pressure?"
+                                                             },
+                                                             {
+                                                                 "id":  "double-c4-q4",
+                                                                 "categoryName":  "Process Design",
+                                                                 "value":  800,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "This represents the fixed capital investment of the plant, minus the value of the land, evaluated at the end of the plant life.",
+                                                                 "response":  "What is the salvage value?"
+                                                             },
+                                                             {
+                                                                 "id":  "double-c4-q5",
+                                                                 "categoryName":  "Process Design",
+                                                                 "value":  1000,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "Nickel-copper alloys are known by this name, which is a trademark of the International Nickel Corporation.",
+                                                                 "response":  "What is Monel?"
+                                                             }
+                                                         ]
+                                           },
+                                           {
+                                               "id":  "double-category-5",
+                                               "name":  "Biochemical Engineering",
+                                               "clues":  [
+                                                             {
+                                                                 "id":  "double-c5-q1",
+                                                                 "categoryName":  "Biochemical Engineering",
+                                                                 "value":  200,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "Glucose isomerase is used to produce this industrially-important product.",
+                                                                 "response":  "What is high-fructose corn syrup (HFCS)?"
+                                                             },
+                                                             {
+                                                                 "id":  "double-c5-q2",
+                                                                 "categoryName":  "Biochemical Engineering",
+                                                                 "value":  400,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "The process to develop large-scale production of this compound has been described as a paradigm for bioprocess development and biochemical engineering.",
+                                                                 "response":  "What is penicillin?"
+                                                             },
+                                                             {
+                                                                 "id":  "double-c5-q3",
+                                                                 "categoryName":  "Biochemical Engineering",
+                                                                 "value":  600,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "IEF is an electrophoresis technique that separates proteins based on this.",
+                                                                 "response":  "What is the protein’s isoelectric point (pI)?"
+                                                             },
+                                                             {
+                                                                 "id":  "double-c5-q4",
+                                                                 "categoryName":  "Biochemical Engineering",
+                                                                 "value":  800,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "This byproduct of the sugar processing industry is commonly used as an economical carbon source for bacterial fermentations.",
+                                                                 "response":  "What is molasses?"
+                                                             },
+                                                             {
+                                                                 "id":  "double-c5-q5",
+                                                                 "categoryName":  "Biochemical Engineering",
+                                                                 "value":  1000,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "This is the most commonly used mammalian cell line in the commercial production of recombinant proteins.",
+                                                                 "response":  "What are Chinese Hamster Ovary (CHO) cells?"
+                                                             }
+                                                         ]
+                                           },
+                                           {
+                                               "id":  "double-category-6",
+                                               "name":  "AIChE",
+                                               "clues":  [
+                                                             {
+                                                                 "id":  "double-c6-q1",
+                                                                 "categoryName":  "AIChE",
+                                                                 "value":  200,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "This city hosted the first AIChE National Meeting?",
+                                                                 "response":  "What is Philadelphia, PA?"
+                                                             },
+                                                             {
+                                                                 "id":  "double-c6-q2",
+                                                                 "categoryName":  "AIChE",
+                                                                 "value":  400,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "He is the current AIChE President.",
+                                                                 "response":  "Who is Phillip R. Westmoreland?"
+                                                             },
+                                                             {
+                                                                 "id":  "double-c6-q3",
+                                                                 "categoryName":  "AIChE",
+                                                                 "value":  600,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "The location and year of the first National AIChE Meeting.",
+                                                                 "response":  "What are Philadelphia and 1908?"
+                                                             },
+                                                             {
+                                                                 "id":  "double-c6-q4",
+                                                                 "categoryName":  "AIChE",
+                                                                 "value":  800,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  true,
+                                                                 "prompt":  "This was established in 1985 to focus on engineering and management practices that help prevent and mitigate catastrophic process safety accidents.",
+                                                                 "response":  "What is the CCPS (Center for Chemical Process Safety)?"
+                                                             },
+                                                             {
+                                                                 "id":  "double-c6-q5",
+                                                                 "categoryName":  "AIChE",
+                                                                 "value":  1000,
+                                                                 "used":  false,
+                                                                 "dailyDouble":  false,
+                                                                 "prompt":  "This was formed in 1976 as a consortium of 29 companies to develop methods for the design of emergency relief systems to handle runaway reactions.",
+                                                                 "response":  "What is DIERS (Design Institute for Emergency Relief Systems)?"
+                                                             }
+                                                         ]
+                                           }
+                                       ]
+                    },
+    "finalJeopardy":  {
+                          "category":  "Chemical Process Safety",
+                          "clue":  "These are the 4 concepts of inherently safer design.",
+                          "response":  "What are Minimize (or Intensification), Substitute, Moderate (or Attenuation and Limitation of Effects), and Simplify (or Error Tolerance)?"
+                      },
+    "tieBreakers":  [
+                        {
+                            "category":  "Process Control",
+                            "clue":  "The four components to consider when troubleshooting a process control problem.",
+                            "response":  "What are sensor, controller, actuator, and process?"
+                        }
+                    ]
+}

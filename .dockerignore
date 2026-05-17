@@ -1,0 +1,12 @@
+# File: .dockerignore
+# Description: Files excluded from Docker build contexts.
+# Author: Arturo Arias
+# Last updated: 2026-05-04
+
+out/
+tmp/
+other_files/
+.env
+.env.local
+project_report.html
+*.class

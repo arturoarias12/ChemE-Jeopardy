@@ -41,6 +41,7 @@ function bindModeratorEvents() {
     document.getElementById('setup-editors').addEventListener('change', handleDraftInput);
     document.getElementById('setup-editors').addEventListener('click', handleSetupClick);
     document.getElementById('moderator-controls').addEventListener('click', handleControlClick);
+    document.getElementById('moderator-roster').addEventListener('click', handleControlClick);
     document.getElementById('moderator-board').addEventListener('click', handleBoardClick);
     document.getElementById('display-theme-form').addEventListener('change', handleDisplayThemeChange);
 }
@@ -176,7 +177,7 @@ function renderModerator() {
         : 'No player password is set yet. Players cannot join until you save one.';
     const setupModeNote = game.phase === 'SETUP'
         ? (moderatorState.dirty ? 'Setup has local changes that still need to be saved.' : 'Setup is editable. Save before starting the game.')
-        : 'Setup is locked while a game is in progress. Reset runtime to return to pre-game setup.';
+        : 'Settings are editable mid-game. Live scores and used clues are preserved across saves. Removing a team kicks its players.';
     const persistenceNote = snapshot.persistDefinitionChanges
         ? `Save Setup writes to ${snapshot.definitionPath || 'the configured question source file'}.`
         : 'Save Setup updates this running event only; the source file is unchanged.';
@@ -201,7 +202,7 @@ function renderModerator() {
     document.getElementById('setup-editors').innerHTML = renderSetupEditors();
 
     const setupLocked = game.phase !== 'SETUP';
-    document.getElementById('save-definition-button').disabled = setupLocked;
+    document.getElementById('save-definition-button').disabled = false;
     document.getElementById('reset-runtime-button').disabled = false;
     document.getElementById('start-game-button').disabled = setupLocked || moderatorState.dirty;
 }
@@ -253,7 +254,12 @@ function renderControls(snapshot) {
         actionButtons.push(controlButton('judge-incorrect', 'Mark Incorrect', 'danger-button'));
     }
     if (game.phase === 'CLUE_REVEAL') {
-        actionButtons.push(controlButton('continue', 'Return To Board', 'primary-button'));
+        if (!game.answerVisible) {
+            actionButtons.push(controlButton('reveal-response', 'Reveal Response', 'primary-button'));
+            actionButtons.push(controlButton('continue', 'Return To Board (skip reveal)', 'ghost-button'));
+        } else {
+            actionButtons.push(controlButton('continue', 'Return To Board', 'primary-button'));
+        }
     }
     if (game.phase === 'DAILY_DOUBLE_WAGER') {
         const chooser = teams.find(team => team.id === game.activeClueSelectingTeamId);
@@ -418,7 +424,7 @@ function renderModeratorRoster(definition, game) {
                         </div>
                         <ul class="roster-list">
                             ${players.length
-                                ? players.map(player => `<li>${escapeHtml(player.displayName)}${player.connected ? '' : ' (idle)'}</li>`).join('')
+                                ? players.map(player => `<li><span>${escapeHtml(player.displayName)}${player.connected ? '' : ' (idle)'}</span> <button class="button ghost-button roster-kick" type="button" data-control-action="kick-player" data-player-id="${escapeHtml(player.id)}" data-player-name="${escapeHtml(player.displayName)}">Remove</button></li>`).join('')
                                 : '<li>Waiting for players</li>'}
                         </ul>
                     </article>
@@ -923,11 +929,23 @@ async function handleControlClick(event) {
         return;
     }
 
+    if (action === 'kick-player') {
+        const playerId = button.dataset.playerId;
+        const playerName = button.dataset.playerName || 'this player';
+        if (!confirm(`Remove ${playerName} from their team?\n\nThey can rejoin from the player page and pick any open team.`)) {
+            return;
+        }
+        const response = await postForm('/api/mod/kick-player', { playerId });
+        showToast(response.message);
+        return;
+    }
+
     const route = {
         'finish-reading': '/api/mod/finish-reading',
         'judge-correct': '/api/mod/judge-correct',
         'judge-incorrect': '/api/mod/judge-incorrect',
         'continue': '/api/mod/continue',
+        'reveal-response': '/api/mod/reveal-response',
         'start-daily-double': '/api/mod/start-daily-double',
         'start-final-wager': '/api/mod/start-final-wager',
         'lock-final-wagers': '/api/mod/lock-final-wagers',

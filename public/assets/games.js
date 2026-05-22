@@ -23,7 +23,45 @@ function bindMasterEvents() {
     document.getElementById('create-game-form').addEventListener('submit', handleCreateGame);
     document.getElementById('create-game-form').addEventListener('change', handleCreateFormChange);
     document.getElementById('games-list').addEventListener('submit', handleGameEdit);
-    document.getElementById('games-list').addEventListener('click', handleGameDelete);
+    document.getElementById('games-list').addEventListener('click', handleGamesListClick);
+}
+
+async function handleGamesListClick(event) {
+    const passwordButton = event.target.closest('[data-change-password]');
+    if (passwordButton) {
+        await changeGamePassword(passwordButton.dataset.gameId, passwordButton.dataset.changePassword);
+        return;
+    }
+    await handleGameDelete(event);
+}
+
+async function changeGamePassword(gameId, kind) {
+    const label = kind === 'moderator' ? 'moderator' : 'player';
+    const newPassword = window.prompt(`Enter the new ${label} password for "${gameId}":`);
+    if (newPassword === null) {
+        return;
+    }
+    if (!newPassword.trim()) {
+        showToast(`${label.charAt(0).toUpperCase() + label.slice(1)} password cannot be empty.`);
+        return;
+    }
+    const game = masterState.games.find(entry => entry.id === gameId);
+    if (!game) {
+        showToast('That game no longer exists.');
+        return;
+    }
+    const payload = {
+        currentGameId: gameId,
+        gameId,
+        displayName: game.displayName || game.title || gameId,
+        moderatorPassword: kind === 'moderator' ? newPassword : '',
+        playerPassword: kind === 'player' ? newPassword : '',
+    };
+    const response = await postJson('/api/games/update', payload);
+    showToast(response.message);
+    if (response.ok) {
+        await refreshGames();
+    }
 }
 
 async function refreshMasterAuth() {
@@ -195,6 +233,8 @@ function renderGames() {
                     </div>
                     <div class="button-row">
                         <button class="button ghost-button" type="submit">Update Game</button>
+                        <button class="button ghost-button" type="button" data-change-password="moderator" data-game-id="${escapeHtml(game.id)}">Change Moderator Password</button>
+                        <button class="button ghost-button" type="button" data-change-password="player" data-game-id="${escapeHtml(game.id)}">Change Player Password</button>
                         <button class="button danger-button" type="button" data-game-delete-button data-game-id="${escapeHtml(game.id)}">Delete Game</button>
                     </div>
                 </form>

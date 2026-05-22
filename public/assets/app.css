@@ -483,6 +483,21 @@ input[type="radio"] {
     color: var(--muted);
 }
 
+.roster-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+    margin: 0.25rem 0;
+}
+
+.roster-list .roster-kick {
+    padding: 0.2rem 0.7rem;
+    font-size: 0.78rem;
+    line-height: 1.2;
+    flex-shrink: 0;
+}
+
 .question-set-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));

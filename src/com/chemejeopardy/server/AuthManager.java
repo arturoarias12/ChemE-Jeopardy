@@ -40,8 +40,8 @@ public final class AuthManager {
     /** Cookie name for this auth scope. Multi-game hosting gives each game its own cookie. */
     private final String moderatorCookie;
 
-    /** Server-administrator password loaded from configuration. */
-    private final String moderatorPassword;
+    /** Server-administrator password. Mutable so the master view can rotate it mid-event. */
+    private volatile String moderatorPassword;
 
     /** Player join password controlled by the moderator during the event. */
     private volatile String playerJoinPassword;
@@ -146,6 +146,19 @@ public final class AuthManager {
      */
     public void setPlayerJoinPassword(String password) {
         playerJoinPassword = clean(password);
+    }
+
+    /**
+     * Replaces the moderator password without disturbing existing moderator sessions.
+     * Returning true keeps callers from issuing toasts when the input was blank/no-op.
+     */
+    public boolean setModeratorPassword(String password) {
+        String cleaned = clean(password);
+        if (cleaned.isBlank()) {
+            return false;
+        }
+        moderatorPassword = cleaned;
+        return true;
     }
 
     /**

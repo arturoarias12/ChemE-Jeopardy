@@ -281,6 +281,9 @@ public final class AppServer {
             case "/api/mod/judge-correct" -> handleModeratorPostNoBody(exchange, session, () -> session.engine.judgeCurrent(true));
             case "/api/mod/judge-incorrect" -> handleModeratorPostNoBody(exchange, session, () -> session.engine.judgeCurrent(false));
             case "/api/mod/continue" -> handleModeratorPostNoBody(exchange, session, session.engine::continueAfterReveal);
+            case "/api/mod/reveal-response" -> handleModeratorPostNoBody(exchange, session, session.engine::revealResponseNow);
+            case "/api/mod/kick-player" -> handleModeratorFormPost(exchange, session, form ->
+                    session.engine.kickPlayer(form.getOrDefault("playerId", "")));
             case "/api/mod/daily-wager" -> handleModeratorFormPost(exchange, session, form ->
                     session.engine.setDailyWager(
                             form.getOrDefault("teamId", ""),
@@ -377,6 +380,8 @@ public final class AppServer {
         String currentId = cleanText(payloadString(payload, "currentGameId"));
         String requestedId = slugOrDefault(payloadString(payload, "gameId"));
         String displayName = cleanText(payloadString(payload, "displayName"));
+        String newModeratorPassword = payloadString(payload, "moderatorPassword");
+        String newPlayerPassword = payloadString(payload, "playerPassword");
         if (currentId.isBlank()) {
             writeJson(exchange, error("Choose a game to update."));
             return;
@@ -408,8 +413,22 @@ public final class AppServer {
                 games.put(requestedId, session);
             }
             session.displayName = displayName;
+            java.util.List<String> changes = new java.util.ArrayList<>();
+            if (!newModeratorPassword.isBlank()) {
+                if (session.authManager.setModeratorPassword(newModeratorPassword)) {
+                    changes.add("moderator password");
+                }
+            }
+            if (!newPlayerPassword.isBlank()) {
+                session.authManager.setPlayerJoinPassword(newPlayerPassword);
+                changes.add("player password");
+            }
             broadcastState(session);
-            Map<String, Object> response = ok("Game updated.");
+            String message = "Game updated.";
+            if (!changes.isEmpty()) {
+                message = "Game updated. Rotated " + String.join(" and ", changes) + ".";
+            }
+            Map<String, Object> response = ok(message);
             response.put("game", gameSummary(session));
             writeJson(exchange, 200, response);
         }

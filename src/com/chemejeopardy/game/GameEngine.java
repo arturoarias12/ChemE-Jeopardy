@@ -221,22 +221,31 @@ public final class GameEngine {
 
     /**
      * Internal shared definition replacement path used by setup saves and question-set loads.
+     * Setup-phase saves rebuild runtime state from scratch. Mid-game saves merge the new
+     * definition in place so live scores, used clues, and the current phase survive the edit.
      */
     private Map<String, Object> replaceDefinition(Object jsonBody, boolean persistChanges, String successMessage) {
         boolean changed = false;
+        String resolvedMessage = successMessage;
         synchronized (this) {
-            if (state.phase != Phase.SETUP) {
-                return error("Game settings can only be edited before the game starts.");
-            }
             try {
                 GameDefinition candidate = GameDefinition.fromMap(Json.asObject(jsonBody));
                 normalizeDefinition(candidate);
-                RuntimeState previousState = state;
-                definition = candidate;
-                if (persistChanges) {
-                    persistDefinition();
+                if (state.phase == Phase.SETUP) {
+                    RuntimeState previousState = state;
+                    definition = candidate;
+                    if (persistChanges) {
+                        persistDefinition();
+                    }
+                    state = createRuntimeState(previousState);
+                } else {
+                    mergeDefinitionMidGameLocked(candidate);
+                    definition = candidate;
+                    if (persistChanges) {
+                        persistDefinition();
+                    }
+                    resolvedMessage = "Game settings updated mid-game. Live scores and used clues were preserved.";
                 }
-                state = createRuntimeState(previousState);
                 changed = true;
             } catch (Exception ex) {
                 return error("Unable to parse the game definition: " + ex.getMessage());
@@ -245,7 +254,107 @@ public final class GameEngine {
         if (changed) {
             fireChange();
         }
-        return ok(successMessage);
+        return ok(resolvedMessage);
+    }
+
+    /**
+     * Reconciles new definition data with the live runtime state. Preserves team scores
+     * for matching team IDs, preserves the used flag for matching clue IDs, kicks players
+     * whose team disappeared or whose team is now inactive, and trims teams over the new
+     * per-team capacity. The current phase, status, and timers are left untouched.
+     */
+    private void mergeDefinitionMidGameLocked(GameDefinition candidate) {
+        java.util.Set<String> newTeamIds = new java.util.LinkedHashSet<>();
+        for (TeamDefinition teamDefinition : candidate.teams) {
+            newTeamIds.add(teamDefinition.id);
+        }
+        java.util.List<String> droppedTeamIds = new java.util.ArrayList<>();
+        for (String existingId : new java.util.ArrayList<>(state.teamStates.keySet())) {
+            if (!newTeamIds.contains(existingId)) {
+                droppedTeamIds.add(existingId);
+            }
+        }
+        for (String dropId : droppedTeamIds) {
+            TeamRuntime dropped = state.teamStates.remove(dropId);
+            if (dropped != null) {
+                for (String playerId : new java.util.ArrayList<>(dropped.players)) {
+                    state.players.remove(playerId);
+                    state.pendingBuzzes.remove(playerId);
+                    if (playerId.equals(state.recognizedPlayerId)) {
+                        state.recognizedPlayerId = null;
+                        state.recognizedTeamId = null;
+                    }
+                }
+            }
+            state.lockedOutTeamIds.remove(dropId);
+            state.finalRevealOrder.remove(dropId);
+            state.tieTeamIds.remove(dropId);
+            if (dropId.equals(state.chooserTeamId)) {
+                state.chooserTeamId = null;
+            }
+            if (dropId.equals(state.activeClueSelectingTeamId)) {
+                state.activeClueSelectingTeamId = null;
+            }
+        }
+        java.util.LinkedHashMap<String, TeamRuntime> rebuiltTeams = new java.util.LinkedHashMap<>();
+        for (TeamDefinition teamDefinition : candidate.teams) {
+            TeamRuntime existing = state.teamStates.get(teamDefinition.id);
+            if (existing == null) {
+                existing = new TeamRuntime();
+                existing.id = teamDefinition.id;
+                existing.score = 0;
+                existing.players = new java.util.ArrayList<>();
+            }
+            existing.name = teamDefinition.name;
+            existing.color = teamDefinition.color;
+            existing.active = teamDefinition.active;
+            int capacity = Math.max(1, candidate.config.maxPlayersPerTeam);
+            while (existing.players.size() > capacity) {
+                String overflowId = existing.players.remove(existing.players.size() - 1);
+                state.players.remove(overflowId);
+                state.pendingBuzzes.remove(overflowId);
+            }
+            if (!existing.active) {
+                for (String playerId : new java.util.ArrayList<>(existing.players)) {
+                    state.players.remove(playerId);
+                    state.pendingBuzzes.remove(playerId);
+                }
+                existing.players.clear();
+            }
+            rebuiltTeams.put(existing.id, existing);
+        }
+        state.teamStates = rebuiltTeams;
+        java.util.Map<String, Boolean> usedFlags = new java.util.HashMap<>();
+        captureUsedFlags(definition.singleBoard, usedFlags);
+        captureUsedFlags(definition.doubleBoard, usedFlags);
+        applyUsedFlags(candidate.singleBoard, usedFlags);
+        applyUsedFlags(candidate.doubleBoard, usedFlags);
+    }
+
+    private void captureUsedFlags(Board board, java.util.Map<String, Boolean> sink) {
+        if (board == null) {
+            return;
+        }
+        for (Category category : board.categories) {
+            for (Clue clue : category.clues) {
+                if (clue.used) {
+                    sink.put(clue.id, true);
+                }
+            }
+        }
+    }
+
+    private void applyUsedFlags(Board board, java.util.Map<String, Boolean> source) {
+        if (board == null) {
+            return;
+        }
+        for (Category category : board.categories) {
+            for (Clue clue : category.clues) {
+                if (Boolean.TRUE.equals(source.get(clue.id))) {
+                    clue.used = true;
+                }
+            }
+        }
     }
 
     /**
@@ -754,7 +863,7 @@ public final class GameEngine {
     public Map<String, Object> continueAfterReveal() {
         boolean changed = false;
         synchronized (this) {
-            if (state.phase != Phase.CLUE_REVEAL || state.activeClue == null || !state.answerVisible) {
+            if (state.phase != Phase.CLUE_REVEAL || state.activeClue == null) {
                 return error("There is no revealed clue waiting to continue.");
             }
             state.answerVisible = false;
@@ -1029,7 +1138,8 @@ public final class GameEngine {
     }
 
     /**
-     * Reveals the official response when no eligible team buzzes in time.
+     * Holds the clue in reveal state when no team buzzes. Response stays hidden until the
+     * moderator explicitly reveals it, so the public display is not surprised by an answer.
      */
     private void handleBuzzWindowExpired() {
         boolean changed = false;
@@ -1038,7 +1148,7 @@ public final class GameEngine {
                 return;
             }
             clearCountdownLocked();
-            revealAndHoldLocked("No team buzzed in time.");
+            holdWithoutRevealLocked("Time is up. No team buzzed in. Reveal the response when ready, then return to the board.");
             changed = true;
         }
         if (changed) {
@@ -1109,6 +1219,82 @@ public final class GameEngine {
         state.buzzResolutionScheduled = false;
         state.lockedOutTeamIds.clear();
         state.phase = Phase.CLUE_REVEAL;
+    }
+
+    /**
+     * Holds the clue in CLUE_REVEAL phase without exposing the official response.
+     * Used when a timer ends without a moderator judgment so the moderator can choose
+     * when to publish the answer to the room display and the players.
+     */
+    private void holdWithoutRevealLocked(String statusMessage) {
+        state.answerVisible = false;
+        state.lastRevealTitle = state.activeClue == null
+                ? ""
+                : state.activeClue.categoryName + " for " + state.activeClue.value;
+        state.lastRevealResponse = state.activeClue == null ? "" : state.activeClue.response;
+        state.statusMessage = statusMessage;
+        state.recognizedPlayerId = null;
+        state.recognizedTeamId = null;
+        state.pendingBuzzes.clear();
+        state.buzzResolutionScheduled = false;
+        state.lockedOutTeamIds.clear();
+        state.phase = Phase.CLUE_REVEAL;
+    }
+
+    /**
+     * Moderator action that publishes the official response after a held-without-reveal state.
+     */
+    public Map<String, Object> revealResponseNow() {
+        boolean changed = false;
+        synchronized (this) {
+            if (state.phase != Phase.CLUE_REVEAL || state.activeClue == null) {
+                return error("There is no clue waiting to be revealed.");
+            }
+            if (state.answerVisible) {
+                return error("The response is already revealed.");
+            }
+            state.answerVisible = true;
+            state.lastRevealResponse = state.activeClue.response;
+            state.statusMessage = "Response revealed. Return to the board when ready.";
+            changed = true;
+        }
+        if (changed) {
+            fireChange();
+        }
+        return ok("Response revealed.");
+    }
+
+    /**
+     * Removes a player from the team roster. The player session itself is invalidated so
+     * the player UI returns to the join screen and the player may rejoin any team.
+     */
+    public Map<String, Object> kickPlayer(String playerId) {
+        boolean changed = false;
+        synchronized (this) {
+            PlayerRuntime player = state.players.get(playerId);
+            if (player == null) {
+                return error("That player is no longer in the game.");
+            }
+            String name = player.displayName;
+            TeamRuntime team = state.teamStates.get(player.teamId);
+            if (team != null) {
+                team.players.remove(playerId);
+            }
+            state.players.remove(playerId);
+            if (playerId.equals(state.recognizedPlayerId)) {
+                state.recognizedPlayerId = null;
+                state.recognizedTeamId = null;
+            }
+            state.pendingBuzzes.remove(playerId);
+            state.statusMessage = name + " was removed from "
+                    + (team == null ? "the game" : team.name)
+                    + ". They may rejoin from the player page.";
+            changed = true;
+        }
+        if (changed) {
+            fireChange();
+        }
+        return ok("Player removed.");
     }
 
     /**

@@ -548,11 +548,21 @@ function reconcileSession(game) {
     }
     const liveTeam = (game.teams || []).find(team => team.id === playerState.session.teamId);
     const livePlayer = liveTeam ? (liveTeam.players || []).find(player => player.id === playerState.session.playerId) : null;
-    if (!livePlayer && game.phase === 'SETUP') {
-        playerState.session = null;
-        playerState.syncInfo = null;
-        localStorage.removeItem(playerSessionStorageKey());
+    if (livePlayer) {
+        return;
+    }
+    const presentSomewhere = (game.teams || []).some(team =>
+        (team.players || []).some(player => player.id === playerState.session.playerId));
+    if (presentSomewhere) {
+        return;
+    }
+    playerState.session = null;
+    playerState.syncInfo = null;
+    localStorage.removeItem(playerSessionStorageKey());
+    if (game.phase === 'SETUP') {
         showToast('Your saved session is no longer active. Please join again.');
+    } else {
+        showToast('You were removed from your team. Rejoin to keep playing.');
     }
 }
 

@@ -550,6 +550,7 @@ function renderSetupEditors() {
                     ${configInput('Final response seconds', 'finalResponseSeconds', draft.config.finalResponseSeconds, 'number', 1, 120)}
                 </div>
                 <div class="button-row">
+                    ${configCheckbox('Include Single Jeopardy', 'includeSingleJeopardy', draft.config.includeSingleJeopardy)}
                     ${configCheckbox('Include Double Jeopardy', 'includeDoubleJeopardy', draft.config.includeDoubleJeopardy)}
                     ${configCheckbox('Include Final Jeopardy', 'includeFinalJeopardy', draft.config.includeFinalJeopardy)}
                 </div>
@@ -986,6 +987,7 @@ function normalizeDefinitionDraft(draft) {
     draft.config.dailyDoubleResponseSeconds = clamp(Number(draft.config.dailyDoubleResponseSeconds || 10), 1, 60);
     draft.config.finalWagerSeconds = clamp(Number(draft.config.finalWagerSeconds || 30), 1, 120);
     draft.config.finalResponseSeconds = clamp(Number(draft.config.finalResponseSeconds || 30), 1, 120);
+    draft.config.includeSingleJeopardy = draft.config.includeSingleJeopardy !== false;
     draft.config.includeDoubleJeopardy = draft.config.includeDoubleJeopardy !== false;
     draft.config.includeFinalJeopardy = draft.config.includeFinalJeopardy !== false;
     draft.config.displayThemeColor ||= 'blue';

@@ -381,10 +381,19 @@ public final class GameEngine {
             if (activeTeams.size() < 2) {
                 return error("At least two active teams are required.");
             }
+            if (!definition.config.includeSingleJeopardy && !definition.config.includeDoubleJeopardy) {
+                return error("Enable Single Jeopardy or Double Jeopardy before starting the game.");
+            }
             state.phase = Phase.ROUND_BOARD;
-            state.currentRound = RoundType.SINGLE;
-            state.chooserTeamId = activeTeams.get(random.nextInt(activeTeams.size())).id;
-            state.statusMessage = "Single Jeopardy has started. " + teamName(state.chooserTeamId) + " selects first.";
+            if (definition.config.includeSingleJeopardy) {
+                state.currentRound = RoundType.SINGLE;
+                state.chooserTeamId = activeTeams.get(random.nextInt(activeTeams.size())).id;
+                state.statusMessage = "Single Jeopardy has started. " + teamName(state.chooserTeamId) + " selects first.";
+            } else {
+                state.currentRound = RoundType.DOUBLE;
+                state.chooserTeamId = activeTeams.get(random.nextInt(activeTeams.size())).id;
+                state.statusMessage = "Single Jeopardy is skipped. Double Jeopardy has started. " + teamName(state.chooserTeamId) + " selects first.";
+            }
             changed = true;
         }
         if (changed) {
@@ -2180,6 +2189,8 @@ public final class GameEngine {
         private int finalWagerSeconds;
         /** Seconds for Final Jeopardy responses. */
         private int finalResponseSeconds;
+        /** Whether Single Jeopardy is included. When false the game starts at Double Jeopardy. */
+        private boolean includeSingleJeopardy;
         /** Whether Double Jeopardy is included. */
         private boolean includeDoubleJeopardy;
         /** Whether Final Jeopardy is included. */
@@ -2202,6 +2213,7 @@ public final class GameEngine {
             config.dailyDoubleResponseSeconds = 10;
             config.finalWagerSeconds = 30;
             config.finalResponseSeconds = 30;
+            config.includeSingleJeopardy = true;
             config.includeDoubleJeopardy = true;
             config.includeFinalJeopardy = true;
             config.displayThemeColor = "blue";
@@ -2222,6 +2234,7 @@ public final class GameEngine {
             config.dailyDoubleResponseSeconds = Json.asInt(map.get("dailyDoubleResponseSeconds"), config.dailyDoubleResponseSeconds);
             config.finalWagerSeconds = Json.asInt(map.get("finalWagerSeconds"), config.finalWagerSeconds);
             config.finalResponseSeconds = Json.asInt(map.get("finalResponseSeconds"), config.finalResponseSeconds);
+            config.includeSingleJeopardy = Json.asBoolean(map.get("includeSingleJeopardy"), config.includeSingleJeopardy);
             config.includeDoubleJeopardy = Json.asBoolean(map.get("includeDoubleJeopardy"), config.includeDoubleJeopardy);
             config.includeFinalJeopardy = Json.asBoolean(map.get("includeFinalJeopardy"), config.includeFinalJeopardy);
             config.displayThemeColor = Json.asString(map.get("displayThemeColor"), config.displayThemeColor);
@@ -2242,6 +2255,7 @@ public final class GameEngine {
             map.put("dailyDoubleResponseSeconds", dailyDoubleResponseSeconds);
             map.put("finalWagerSeconds", finalWagerSeconds);
             map.put("finalResponseSeconds", finalResponseSeconds);
+            map.put("includeSingleJeopardy", includeSingleJeopardy);
             map.put("includeDoubleJeopardy", includeDoubleJeopardy);
             map.put("includeFinalJeopardy", includeFinalJeopardy);
             map.put("displayThemeColor", displayThemeColor);
